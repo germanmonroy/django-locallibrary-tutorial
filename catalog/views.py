@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from catalog.models import Book, Author, BookInstance, Genre
 from django.views import generic
+# from django.contrib.auth.decorators import login_required
+
+# decorator to require user to login to access page
+# @login_required
 
 # Create your views here.
 def index(request):
@@ -30,6 +34,14 @@ def index(request):
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
+
+# easiest way to restrict access to logged-in users in your class-based views is to derive from LoginRequiredMixin. 
+# You need to declare this mixin first in the superclass list, before the main view class.
+# from django.contrib.auth.mixins import LoginRequiredMixin
+
+# class BookListView(LoginRequiredMixin, generic.ListView):
+#     model = Book
+#     paginate_by = 10
 
 class BookListView(generic.ListView):
     model = Book

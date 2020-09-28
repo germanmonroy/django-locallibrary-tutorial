@@ -35,14 +35,6 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
-# easiest way to restrict access to logged-in users in your class-based views is to derive from LoginRequiredMixin. 
-# You need to declare this mixin first in the superclass list, before the main view class.
-# from django.contrib.auth.mixins import LoginRequiredMixin
-
-# class BookListView(LoginRequiredMixin, generic.ListView):
-#     model = Book
-#     paginate_by = 10
-
 class BookListView(generic.ListView):
     model = Book
     paginate_by = 10
@@ -56,3 +48,16 @@ class AuthorListView(generic.ListView):
 
 class AuthorDetailView(generic.DetailView):
     model = Author
+
+# easiest way to restrict access to logged-in users in your class-based views is to derive from LoginRequiredMixin. 
+# You need to declare this mixin first in the superclass list, before the main view class.
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    model = BookInstance
+    template_name = 'catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
